@@ -1,37 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
-  <title>Login</title>
-  <script src="https://cdn.auth0.com/js/lock/11.30.0/lock.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferrioli.eu - Homepage</title>
+    <link rel="stylesheet" href="styles/home.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-  <button id="login">Login</button>
-  
-  <script>
-    var lock = new Auth0Lock(
-      'vX3qBVAN46OKXqpwJVGqpWGF8dNYQaR3',
-      'dev-bqn2ekncrfcvoc7a.us.auth0.com',
-      {
-        auth: {
-          redirectUrl: 'TUO_URL_DI_RITORNO',
-          responseType: 'token id_token',
-          params: {
-            scope: 'openid profile email'
-          }
-        },
-        allowedConnections: ['Username-Password-Authentication'],
-        rememberLastLogin: false,
-        language: 'it',
-        theme: {
-          logo: 'URL_LOGO',
-          primaryColor: '#31324F'
-        }
-      }
-    );
+    <header>
+        <div class="logo-container">
+            <img src="images/logo.png" alt="Logo Ferrioli" class="logo">
+            <h1>FERRIOLI.EU</h1>
+        </div>
+    </header>
 
-    document.getElementById('login').addEventListener('click', function() {
-      lock.show();
-    });
-  </script>
+    <main>
+        <div class="hero-section">
+            <h2>HOMEPAGE</h2>
+            <p class="subtitle">Accedi ai servizi</p>
+        </div>
+
+        <div class="services-grid">
+            <!-- Servizi per tutti -->
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h3 class="service-title">WEBMAIL</h3>
+                <button class="service-button" onclick="window.open('https://webmail.aruba.it', '_blank')">
+                    Accedi
+                </button>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h3 class="service-title">NOTION</h3>
+                <button class="service-button" onclick="window.open('https://www.notion.so', '_blank')">
+                    Accedi
+                </button>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-ticket-alt"></i>
+                </div>
+                <h3 class="service-title">BILLETTO</h3>
+                <button class="service-button" onclick="window.open('https://www.billetto.com', '_blank')">
+                    Accedi
+                </button>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-paw"></i>
+                </div>
+                <h3 class="service-title">BASEBEAR</h3>
+                <button class="service-button" onclick="window.open('https://www.basebear.com', '_blank')">
+                    Accedi
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2023 Ferrioli.eu - Tutti i diritti riservati</p>
+        <a href="mailto:supporto@ferrioli.eu" class="support-link">Contatta il supporto</a>
+    </footer>
 </body>
 </html>
