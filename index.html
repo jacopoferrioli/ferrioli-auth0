@@ -1,42 +1,37 @@
 <!DOCTYPE html>
-<html lang="it">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Ferrioli.eu</title>
-    <link rel="stylesheet" href="styles/login.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <title>Login</title>
+  <script src="https://cdn.auth0.com/js/lock/11.30.0/lock.min.js"></script>
 </head>
 <body>
-    <div class="login-container">
-        <img src="images/logo.png" alt="Ferrioli Logo" class="logo">
-        <h1 class="domain-title">FERRIOLI.EU</h1>
-        
-        <div class="login-box">
-            <h2>LOGIN</h2>
-            <button id="login-button" class="auth0-login-button">Accedi con Auth0</button>
-            
-            <div class="auth0-links">
-                <a href="#" id="forgot-password" class="forgot-password">Password dimenticata?</a>
-                <button id="support-button" class="support-button">Contatta il supporto</button>
-            </div>
-        </div>
-    </div>
+  <button id="login">Login</button>
+  
+  <script>
+    var lock = new Auth0Lock(
+      'vX3qBVAN46OKXqpwJVGqpWGF8dNYQaR3',
+      'dev-bqn2ekncrfcvoc7a.us.auth0.com',
+      {
+        auth: {
+          redirectUrl: 'TUO_URL_DI_RITORNO',
+          responseType: 'token id_token',
+          params: {
+            scope: 'openid profile email'
+          }
+        },
+        allowedConnections: ['Username-Password-Authentication'],
+        rememberLastLogin: false,
+        language: 'it',
+        theme: {
+          logo: 'URL_LOGO',
+          primaryColor: '#31324F'
+        }
+      }
+    );
 
-   <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
-<script>
-    // Fallback per caricamento Auth0
-    if (typeof Auth0Client === 'undefined') {
-        document.addEventListener('auth0:loaded', function() {
-            const script = document.createElement('script');
-            script.src = 'scripts/auth.js';
-            document.body.appendChild(script);
-        });
-    } else {
-        const script = document.createElement('script');
-        script.src = 'scripts/auth.js';
-        document.body.appendChild(script);
-    }
-</script>
+    document.getElementById('login').addEventListener('click', function() {
+      lock.show();
+    });
+  </script>
 </body>
 </html>
