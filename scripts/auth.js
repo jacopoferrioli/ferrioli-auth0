@@ -1,5 +1,5 @@
-// Configurazione Auth0 con i tuoi parametri
-const auth0Client = new Auth0Client({
+// Configurazione Auth0
+const auth0 = new Auth0Client({
     domain: 'dev-bqn2ekncrfcvoc7a.us.auth0.com',
     client_id: 'vX3qBVAN46OKXqpwJVGqpWGF8dNYQaR3',
     redirect_uri: window.location.origin + '/home.html',
@@ -7,10 +7,10 @@ const auth0Client = new Auth0Client({
     scope: 'openid profile email'
 });
 
-// Gestione login
-document.getElementById('login-button').addEventListener('click', async () => {
+// Funzione per gestire il login
+async function handleLogin() {
     try {
-        await auth0Client.loginWithRedirect({
+        await auth0.loginWithRedirect({
             authorizationParams: {
                 connection: 'Username-Password-Authentication'
             }
@@ -18,27 +18,40 @@ document.getElementById('login-button').addEventListener('click', async () => {
     } catch (err) {
         console.error('Login error:', err);
     }
-});
+}
 
-// Password dimenticata
-document.getElementById('forgot-password').addEventListener('click', (e) => {
+// Funzione per recupero password
+async function handleForgotPassword(e) {
     e.preventDefault();
-    auth0Client.loginWithRedirect({
-        authorizationParams: {
-            screen_hint: 'forgot_password'
-        }
-    });
-});
-
-// Contatta supporto
-document.getElementById('support-button').addEventListener('click', () => {
-    window.location.href = 'mailto:supporto@ferrioli.eu?subject=RICHIESTA SUPPORTO - LOGIN PAGE';
-});
-
-// Verifica autenticazione al caricamento
-window.addEventListener('load', async () => {
-    const isAuthenticated = await auth0Client.isAuthenticated();
-    if (isAuthenticated) {
-        window.location.href = 'home.html';
+    try {
+        await auth0.loginWithRedirect({
+            authorizationParams: {
+                screen_hint: 'forgot_password',
+                connection: 'Username-Password-Authentication'
+            }
+        });
+    } catch (err) {
+        console.error('Password recovery error:', err);
     }
+}
+
+// Funzione per contattare il supporto
+function handleSupport() {
+    window.location.href = 'mailto:supporto@ferrioli.eu?subject=RICHIESTA SUPPORTO - LOGIN PAGE';
+}
+
+// Inizializzazione al caricamento della pagina
+document.addEventListener('DOMContentLoaded', () => {
+    // Collegamento degli eventi
+    document.getElementById('login-button').addEventListener('click', handleLogin);
+    document.getElementById('forgot-password').addEventListener('click', handleForgotPassword);
+    document.getElementById('support-button').addEventListener('click', handleSupport);
+
+    // Verifica se l'utente è già autenticato
+    (async function() {
+        const isAuthenticated = await auth0.isAuthenticated();
+        if (isAuthenticated) {
+            window.location.href = 'home.html';
+        }
+    })();
 });
