@@ -1,3 +1,25 @@
+// DEBUG INITIAL
+console.log("Script auth.js caricato correttamente");
+
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM completamente caricato");
+    
+    // Verifica che gli elementi esistano
+    const loginBtn = document.getElementById('login-button');
+    const forgotBtn = document.getElementById('forgot-password');
+    const supportBtn = document.getElementById('support-button');
+    
+    console.log("Elementi trovati:", {
+        loginBtn,
+        forgotBtn,
+        supportBtn
+    });
+
+    // Test base degli event listener
+    loginBtn.addEventListener('click', () => console.log("Login button clicked"));
+    forgotBtn.addEventListener('click', () => console.log("Forgot password clicked"));
+    supportBtn.addEventListener('click', () => console.log("Support clicked"));
+
 // Configurazione Auth0
 const auth0 = new Auth0Client({
     domain: 'dev-bqn2ekncrfcvoc7a.us.auth0.com',
