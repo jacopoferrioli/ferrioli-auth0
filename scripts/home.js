@@ -1,30 +1,23 @@
-// Configurazione Auth0
-const auth0 = new Auth0Client({
-    domain: 'dev-bqn2ekncrfcvoc7a.us.auth0.com',
-    client_id: 'vX3qBVAN46OKXqpwJVGqpWGF8dNYQaR3',
-    redirect_uri: window.location.origin + '/home.html'
-});
-
-// Servizi in base al dominio email
-const servicesConfig = {
-    admin: {
-        webmail: { title: 'WEBMAIL', url: 'https://webmail.aruba.it', icon: 'fas fa-envelope' },
-        notion: { title: 'NOTION', url: 'https://www.notion.so', icon: 'fas fa-book' },
-        billetto: { title: 'BILLETTO', url: 'https://www.billetto.com', icon: 'fas fa-ticket-alt' },
-        basebear: { title: 'BASEBEAR', url: 'https://www.basebear.com', icon: 'fas fa-paw' }
-    },
-    ferrioli: {
-        webmail: { title: 'WEBMAIL', url: 'https://webmail.aruba.it', icon: 'fas fa-envelope' },
-        notion: { title: 'NOTION', url: 'https://www.notion.so', icon: 'fas fa-book' },
-        billetto: { title: 'BILLETTO', url: 'https://www.billetto.com', icon: 'fas fa-ticket-alt' },
-        basebear: { title: 'BASEBEAR', url: 'https://www.basebear.com', icon: 'fas fa-paw' }
-    },
-    subdomain: {
-        webmail: { title: 'WEBMAIL', url: 'https://mail.zoho.com', icon: 'fas fa-envelope' },
-        notion: { title: 'NOTION', url: 'https://www.notion.so', icon: 'fas fa-book' },
-        billetto: { title: 'BILLETTO', url: 'https://www.billetto.com', icon: 'fas fa-ticket-alt' },
-        basebear: { title: 'BASEBEAR', url: 'https://www.basebear.com', icon: 'fas fa-paw' }
-    }
+// Configurazione servizi
+const services = {
+    admin: [
+        { id: 'webmail', title: 'WEBMAIL', url: 'https://webmail.aruba.it', icon: 'fas fa-envelope' },
+        { id: 'notion', title: 'NOTION', url: 'https://www.notion.so', icon: 'fas fa-book' },
+        { id: 'billetto', title: 'BILLETTO', url: 'https://www.billetto.com', icon: 'fas fa-ticket-alt' },
+        { id: 'basebear', title: 'BASEBEAR', url: 'https://www.basebear.com', icon: 'fas fa-paw' }
+    ],
+    ferrioli: [
+        { id: 'webmail', title: 'WEBMAIL', url: 'https://webmail.aruba.it', icon: 'fas fa-envelope' },
+        { id: 'notion', title: 'NOTION', url: 'https://www.notion.so', icon: 'fas fa-book' },
+        { id: 'billetto', title: 'BILLETTO', url: 'https://www.billetto.com', icon: 'fas fa-ticket-alt' },
+        { id: 'basebear', title: 'BASEBEAR', url: 'https://www.basebear.com', icon: 'fas fa-paw' }
+    ],
+    subdomain: [
+        { id: 'webmail', title: 'WEBMAIL', url: 'https://mail.zoho.com', icon: 'fas fa-envelope' },
+        { id: 'notion', title: 'NOTION', url: 'https://www.notion.so', icon: 'fas fa-book' },
+        { id: 'billetto', title: 'BILLETTO', url: 'https://www.billetto.com', icon: 'fas fa-ticket-alt' },
+        { id: 'basebear', title: 'BASEBEAR', url: 'https://www.basebear.com', icon: 'fas fa-paw' }
+    ]
 };
 
 const adminEmails = [
@@ -33,81 +26,64 @@ const adminEmails = [
     'amministrazione.generale@cas.ferrioli.eu'
 ];
 
-async function init() {
-    const isAuthenticated = await auth0.isAuthenticated();
-    if (!isAuthenticated) return window.location.href = 'index.html';
+// Inizializzazione
+auth.onAuthStateChanged(user => {
+    if (!user) {
+        window.location.href = 'index.html';
+        return;
+    }
 
-    const user = await auth0.getUser();
     updateProfileInfo(user);
     setupDropdown();
     renderServices(user.email);
-}
+});
 
 function updateProfileInfo(user) {
-    const nameParts = user.email.split('@')[0].split('.');
-    const formattedName = nameParts.map(part => 
-        part.charAt(0).toUpperCase() + part.slice(1)
-    ).join(' ');
-
-    document.getElementById('user-name').textContent = formattedName;
+    const name = user.email.split('@')[0].replace('.', ' ');
+    document.getElementById('user-name').textContent = name;
     document.getElementById('user-email').textContent = user.email;
 }
 
 function setupDropdown() {
-    const profileButton = document.getElementById('profile-button');
-    const dropdownMenu = document.getElementById('dropdown-menu');
-    const logoutButton = document.getElementById('logout-button');
+    const profileBtn = document.getElementById('profile-button');
+    const dropdown = document.getElementById('dropdown-menu');
+    const logoutBtn = document.getElementById('logout-button');
 
-    profileButton.addEventListener('click', () => {
-        dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+    profileBtn.addEventListener('click', () => {
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
     });
 
-    logoutButton.addEventListener('click', () => {
-        auth0.logout({ returnTo: window.location.origin });
+    logoutBtn.addEventListener('click', () => {
+        auth.signOut().then(() => window.location.href = 'index.html');
     });
 
-    document.addEventListener('click', (event) => {
-        if (!profileButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
-            dropdownMenu.style.display = 'none';
+    document.addEventListener('click', (e) => {
+        if (!profileBtn.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
         }
     });
 }
 
 function renderServices(email) {
-    const servicesContainer = document.getElementById('services-container');
-    servicesContainer.innerHTML = '';
+    const container = document.getElementById('services-container');
+    let servicesToShow;
 
-    let config;
     if (adminEmails.includes(email.toLowerCase())) {
-        config = servicesConfig.admin;
+        servicesToShow = services.admin;
     } else if (email.endsWith('@ferrioli.eu')) {
-        config = servicesConfig.ferrioli;
-    } else if (email.match(/@[a-zA-Z0-9-]+\.ferrioli\.eu$/)) {
-        config = servicesConfig.subdomain;
-    }
-
-    if (!config) {
-        servicesContainer.innerHTML = `
-            <div class="no-services">
-                <p>Nessun servizio disponibile per il tuo account.</p>
-            </div>
-        `;
+        servicesToShow = services.ferrioli;
+    } else if (email.match(/@[a-z0-9-]+\.ferrioli\.eu$/i)) {
+        servicesToShow = services.subdomain;
+    } else {
+        container.innerHTML = '<p class="no-access">Non hai accesso a nessun servizio</p>';
         return;
     }
 
-    ['webmail', 'notion', 'billetto', 'basebear'].forEach(key => {
-        if (config[key]) {
-            const service = config[key];
-            const serviceCard = document.createElement('div');
-            serviceCard.className = 'service-card';
-            serviceCard.innerHTML = `
-                <div class="service-icon"><i class="${service.icon}"></i></div>
-                <h3 class="service-title">${service.title}</h3>
-                <button class="service-button" onclick="window.open('${service.url}', '_blank')">Accedi</button>
-            `;
-            servicesContainer.appendChild(serviceCard);
-        }
-    });
+    container.innerHTML = servicesToShow.map(service => `
+        <div class="service-card">
+            <div class="service-icon"><i class="${service.icon}"></i></div>
+            <h3>${service.title}</h3>
+            <button onclick="window.open('${service.url}', '_blank')">Accedi</button>
+        </div>
+    `).join('');
 }
-
-window.addEventListener('load', init);
