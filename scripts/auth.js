@@ -1,37 +1,52 @@
-const auth0 = new Auth0Client({
-    domain: 'dev-bqn2ekncrfcvoc7a.us.auth0.com',
-    client_id: 'vX3qBVAN46OKXqpwJVGqpWGF8dNYQaR3',
-    redirect_uri: window.location.origin + '/home.html',
-    audience: 'https://ferrioli.eu/api',
-    scope: 'openid profile email'
-});
-
-// Fallback automatico se Auth0 non risponde
-let auth0Ready = false;
-
-const initAuth0 = async () => {
-    try {
-        await auth0.checkSession();
-        auth0Ready = true;
-    } catch (err) {
-        console.warn("Auth0 non pronto, usando fallback");
-        document.getElementById('auth0-login-container').style.display = 'block';
-    }
-};
-
-document.getElementById('login-button').addEventListener('click', async () => {
-    if (!auth0Ready) return;
+// Gestione Login
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const button = document.querySelector('.login-button');
+    
+    button.disabled = true;
+    button.textContent = 'Accesso in corso...';
     
     try {
-        await auth0.loginWithRedirect({
-            authorizationParams: {
-                connection: 'Username-Password-Authentication'
-            }
-        });
-    } catch (err) {
-        // Attiva fallback automatico
-        document.getElementById('auth0-fallback-link').click();
+        // Verifica dominio email
+        if (!email.endsWith('@ferrioli.eu') && !email.endsWith('.ferrioli.eu')) {
+            throw new Error('Accesso consentito solo con email @ferrioli.eu');
+        }
+        
+        await auth.signInWithEmailAndPassword(email, password);
+        window.location.href = 'home.html';
+    } catch (error) {
+        alert(error.message);
+        button.disabled = false;
+        button.textContent = 'Accedi';
     }
 });
 
-initAuth0();
+// Password dimenticata
+document.getElementById('forgot-password').addEventListener('click', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    
+    if (!email) {
+        alert('Inserisci la tua email per recuperare la password');
+        return;
+    }
+    
+    auth.sendPasswordResetEmail(email)
+        .then(() => alert('Email di recupero inviata!'))
+        .catch(error => alert(error.message));
+});
+
+// Supporto
+document.getElementById('support-button').addEventListener('click', () => {
+    window.location.href = 'mailto:supporto@ferrioli.eu?subject=RICHIESTA SUPPORTO - LOGIN PAGE';
+});
+
+// Controlla se già loggato
+auth.onAuthStateChanged(user => {
+    if (user && window.location.pathname.endsWith('index.html')) {
+        window.location.href = 'home.html';
+    }
+});
