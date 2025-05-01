@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Ferrioli.eu</title>
+    <link rel="stylesheet" href="styles/login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="login-container">
+        <img src="images/logo.png" alt="Ferrioli Logo" class="logo">
+        <h1 class="domain-title">FERRIOLI.EU</h1>
+        
+        <div class="login-box">
+            <h2>LOGIN</h2>
+            <button id="login-button" class="auth0-login-button">Accedi con Auth0</button>
+            
+            <div class="auth0-links">
+                <a href="#" id="forgot-password" class="forgot-password">Password dimenticata?</a>
+                <button id="support-button" class="support-button">Contatta il supporto</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
+    <script src="scripts/auth.js"></script>
+</body>
+</html>
